@@ -4908,15 +4908,6 @@ CONFIG_VBUS_NOTIFIER=y
 # CONFIG_SENSORS_SX9360_SUB is not set
 # CONFIG_SPU_VERIFY is not set
 
-#
-# samsung Performace manager
-#
-CONFIG_KPERFMON=y
-
-#
-# samsung Performace manager
-#
-CONFIG_KPERFMON_BUILD=m
 # CONFIG_ICD is not set
 CONFIG_DEV_RIL_BRIDGE=y
 CONFIG_SEC_VIBRATOR=y
