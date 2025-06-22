@@ -184,7 +184,7 @@ show_build_info() {
 # Function to create flashable zip
 create_flashable_zip() {
     # Change this to an AnyKernel3 ZIP without the Image file in it
-    local source_zip="/home/zears/Documents/WMKernel-ksunext-susfs.zip"
+    local source_zip="/home/zears/Documents/WMKernel-f22.zip"
     local anykernel_dir="$PREFIX/AnyKernel3"
     local kernel_image="$PREFIX/arch/arm64/boot/Image"
 
@@ -215,7 +215,7 @@ create_flashable_zip() {
     local branch_name=$(git symbolic-ref --short HEAD 2>/dev/null | sed 's/[^a-zA-Z0-9._-]/_/g' || echo "unknown")
 
     # Generate output filename
-    local output_zip="$anykernel_dir/WMKernel-ksunext-susfs-dev_${current_date}_${commit_hash}_${branch_name}.zip"
+    local output_zip="$anykernel_dir/WMKernel-f22_${current_date}_${commit_hash}_${branch_name}.zip"
 
     print_status "Creating flashable zip..."
     print_status "Source: $source_zip"
