@@ -58,101 +58,10 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Function to verify toolchain functionality
-verify_toolchain() {
-    local toolchain_path="$1"
 
-    # Check if path is provided and not empty
-    if [ -z "$toolchain_path" ]; then
-        return 1
-    fi
-
-    local bin_path="$toolchain_path/bin"
-
-    # Check if toolchain directory exists
-    if [ ! -d "$toolchain_path" ]; then
-        return 1
-    fi
-
-    # Check if bin directory exists
-    if [ ! -d "$bin_path" ]; then
-        return 1
-    fi
-
-    # Temporarily add to PATH for testing
-    local old_path="$PATH"
-    export PATH="$bin_path:$PATH"
-
-    # Test essential tools
-    local required_tools=("clang" "llvm-ar" "llvm-nm" "ld.lld" "llvm-objcopy" "llvm-objdump" "llvm-strip")
-    local missing_tools=()
-
-    for tool in "${required_tools[@]}"; do
-        if ! command_exists "$tool"; then
-            missing_tools+=("$tool")
-        fi
-    done
-
-    # Restore PATH
-    export PATH="$old_path"
-
-    if [ ${#missing_tools[@]} -gt 0 ]; then
-        return 1
-    fi
-
-    # Test clang version
-    if [ -x "$bin_path/clang" ]; then
-        local clang_version=$("$bin_path/clang" --version 2>/dev/null | head -n1)
-        if [ -n "$clang_version" ]; then
-            print_success "Clang version: $clang_version"
-        else
-            return 1
-        fi
-    else
-        return 1
-    fi
-
-    return 0
-}
 
 # Function to prompt for toolchain path
-prompt_for_toolchain() {
-    echo
 
-    local user_path
-    local attempts=0
-    local max_attempts=3
-
-    while [ $attempts -lt $max_attempts ]; do
-        read -p "Enter toolchain path, e.g /clang/ NOT /clang/bin (or 'quit' to exit): " user_path
-
-        if [ "$user_path" = "quit" ] || [ "$user_path" = "q" ]; then
-            print_status "Build cancelled by user"
-            exit 0
-        fi
-
-        if [ -z "$user_path" ]; then
-            print_error "Please enter a valid path"
-            ((attempts++))
-            continue
-        fi
-
-        # Expand tilde if present
-        user_path="${user_path/#\~/$HOME}"
-
-        # Check if directory exists
-        if [ ! -d "$user_path" ]; then
-            print_error "Directory does not exist: $user_path"
-            ((attempts++))
-            continue
-        fi
-
-        
-    done
-
-    print_error "Maximum attempts reached. Unable to find a valid toolchain."
-    exit 1
-}
 
 # Function to display build summary
 show_build_info() {
@@ -243,7 +152,7 @@ INSTALL_MOD_STRIP=1 \
 KCFLAGS=-w \
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y \
 KBUILD_BUILD_USER=\"samo" \
-KBUILD_BUILD_HOST=\"samo141988 \""
+KBUILD_BUILD_HOST=\"$(git symbolic-ref --short HEAD)\""
 
 if [ "$QUIET_MODE" = true ]; then
     BUILD_CMD="$BUILD_CMD > \"$BUILD_LOG\" 2>&1"
@@ -270,7 +179,7 @@ IMAGE="$PREFIX/out/arch/arm64/boot/Image"
 AK3="$PREFIX/AnyKernel3"
 cp $IMAGE $AK3
 cd $AK3
-zip -r9 ../$BUILD_END_TIME.zip *
+zip -r9 ../f22_wmk_kernel.zip *
 
 print_section "BUILD COMPLETED"
 print_success "Android kernel build finished successfully!"
