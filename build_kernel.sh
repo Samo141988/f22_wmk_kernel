@@ -147,18 +147,7 @@ prompt_for_toolchain() {
             continue
         fi
 
-        # Verify the toolchain
-        if verify_toolchain "$user_path"; then
-            echo "$user_path"
-            return 0
-        else
-            print_error "Toolchain verification failed for: $user_path"
-            ((attempts++))
-
-            if [ $attempts -lt $max_attempts ]; then
-                echo "Please try again (attempt $((attempts + 1))/$max_attempts)"
-            fi
-        fi
+        
     done
 
     print_error "Maximum attempts reached. Unable to find a valid toolchain."
@@ -184,7 +173,7 @@ show_build_info() {
 # Function to create flashable zip
 create_flashable_zip() {
     # Change this to an AnyKernel3 ZIP without the Image file in it
-    local source_zip="/home/zears/Documents/WMKernel-f22.zip"
+    local source_zip="$PREFIX/WMKernel-f22.zip"
     local anykernel_dir="$PREFIX/AnyKernel3"
     local kernel_image="$PREFIX/arch/arm64/boot/Image"
 
@@ -274,8 +263,8 @@ print_section "TOOLCHAIN DETECTION"
 CLANG_DIR=""
 
 # Check predefined locations
-if [ -d "/home/zears/clang-wmk/bin" ]; then
-    CLANG_DIR="/home/zears/clang-wmk"
+if [ -d "$PREFIX/toolchain/clang-wmk/bin" ]; then
+    CLANG_DIR="$PREFIX/toolchain/clang-wmk"
     print_success "Found custom LLVM toolchain: $CLANG_DIR"
 
     # Verify the found toolchain
@@ -285,8 +274,8 @@ if [ -d "/home/zears/clang-wmk/bin" ]; then
     fi
 fi
 
-if [ -z "$CLANG_DIR" ] && [ -d "${PREFIX}/toolchain/clang/host/linux-x86/clang-r383902/bin" ]; then
-    CLANG_DIR="${PREFIX}/toolchain/clang/host/linux-x86/clang-r383902"
+if [ -z "$CLANG_DIR" ] && [ -d "${PREFIX}/toolchain/clang-wmk/bin" ]; then
+    CLANG_DIR="${PREFIX}/toolchain/clang-wmk"
     print_success "Found default toolchain: $CLANG_DIR"
 
     # Verify the found toolchain
