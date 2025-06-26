@@ -81,8 +81,7 @@ show_build_info() {
 
 
 
-# Start timing
-BUILD_START_TIME=$(date +%s)
+
 
 print_section "ANDROID KERNEL BUILD SCRIPT"
 print_status "Starting build process for Android Kernel $(make kernelversion 2>/dev/null || echo 'Unknown')"
@@ -106,7 +105,7 @@ export ARCH=arm64
 # Display clang version
 CLANG_VERSION=$("$CLANG_DIR/bin/clang" --version | head -n1)
 print_status "Using: $CLANG_VERSION"
-CC_CMD="clang"
+CC_CMD="$CLANG_DIR/bin/clang"
 # Build configuration
 print_section "BUILD CONFIGURATION"
 export KCFLAGS=-w
@@ -135,7 +134,7 @@ print_status "This may take several minutes depending on your hardware..."
 
 # Store build command for reference
 BUILD_CMD="make -j16 ARCH=arm64 SUBARCH=arm64 O=out \
-CC=\"clang\" \
+CC=\"$CLANG_DIR/bin/clang\" \
 AR=\"llvm-ar\" \
 NM=\"llvm-nm\" \
 LD=\"ld.lld\" \
@@ -173,13 +172,13 @@ print_status "Copying kernel image..."
 
 
 # Build completion
-BUILD_END_TIME=$(date +%s)
-show_build_info $BUILD_START_TIME $BUILD_END_TIME
+
+
 IMAGE="$PREFIX/out/arch/arm64/boot/Image"
 AK3="$PREFIX/AnyKernel3"
 cp $IMAGE $AK3
 cd $AK3
-zip -r9 ../f22_wmk_kernel.zip *
+zip -r9 $PREFIX/AnyKernel3/f22_wmk_kernel.zip *
 
 print_section "BUILD COMPLETED"
 print_success "Android kernel build finished successfully!"
