@@ -154,7 +154,7 @@ CONFIG_SECTION_MISMATCH_WARN_ONLY=y \
 KBUILD_BUILD_USER=\"$(git rev-parse --short HEAD | cut -c1-7)\" \
 KBUILD_BUILD_HOST=\"$(git symbolic-ref --short HEAD)\""
 
-if [ "$QUIET_MODE" = true ]; then
+if [ "$QUIET_MODE" = false ]; then
     BUILD_CMD="$BUILD_CMD > \"$BUILD_LOG\" 2>&1"
 else
     BUILD_CMD="$BUILD_CMD 2>&1 | tee \"$BUILD_LOG\""
