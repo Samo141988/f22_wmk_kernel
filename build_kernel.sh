@@ -151,7 +151,7 @@ LLVM_IAS=1 \
 INSTALL_MOD_STRIP=1 \
 KCFLAGS=-w \
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y \
-KBUILD_BUILD_USER=\"samo" \
+KBUILD_BUILD_USER=\"$(git rev-parse --short HEAD | cut -c1-7)\" \
 KBUILD_BUILD_HOST=\"$(git symbolic-ref --short HEAD)\""
 
 if [ "$QUIET_MODE" = true ]; then
