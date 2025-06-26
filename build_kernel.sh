@@ -135,7 +135,7 @@ print_status "This may take several minutes depending on your hardware..."
 
 # Store build command for reference
 BUILD_CMD="make -j16 ARCH=arm64 SUBARCH=arm64 O=out \
-CC=\"$CC_CMD\" \
+CC=\"clang\" \
 AR=\"llvm-ar\" \
 NM=\"llvm-nm\" \
 LD=\"ld.lld\" \
