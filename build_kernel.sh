@@ -184,36 +184,10 @@ print_status "Working directory: $PREFIX"
 
 # Check if custom LLVM toolchain exists, otherwise use default
 print_section "TOOLCHAIN DETECTION"
-CLANG_DIR=""
 
 # Check predefined locations
-if [ -d "$PREFIX/toolchain/clang-wmk/bin" ]; then
-    CLANG_DIR="$PREFIX/toolchain/clang-wmk"
-    print_success "Found custom LLVM toolchain: $CLANG_DIR"
-
-    # Verify the found toolchain
-    if ! verify_toolchain "$CLANG_DIR"; then
-        print_error "Custom toolchain verification failed, trying default location"
-        CLANG_DIR=""
-    fi
-fi
-
-if [ -z "$CLANG_DIR" ] && [ -d "${PREFIX}/toolchain/clang-wmk/bin" ]; then
-    CLANG_DIR="${PREFIX}/toolchain/clang-wmk"
-    print_success "Found default toolchain: $CLANG_DIR"
-
-    # Verify the found toolchain
-    if ! verify_toolchain "$CLANG_DIR"; then
-        print_error "Default toolchain verification failed"
-        CLANG_DIR=""
-    fi
-fi
-
-if [ -z "$CLANG_DIR" ]; then
-    # No valid toolchain found, prompt user
-    CLANG_DIR=$(prompt_for_toolchain)
-    print_success "Using user-provided toolchain: $CLANG_DIR"
-fi
+CLANG_DIR="${PREFIX}/toolchain/clang-wmk"
+print_success "Found default toolchain: $CLANG_DIR"
 
 # Set up environment
 print_section "ENVIRONMENT SETUP"
@@ -221,12 +195,8 @@ export PATH="$CLANG_DIR/bin:$PATH"
 export ARCH=arm64
 
 # Display clang version
-if [ -x "$CLANG_DIR/bin/clang" ]; then
-    CLANG_VERSION=$("$CLANG_DIR/bin/clang" --version | head -n1)
-    print_status "Using: $CLANG_VERSION"
-fi
-
-
+CLANG_VERSION=$("$CLANG_DIR/bin/clang" --version | head -n1)
+print_status "Using: $CLANG_VERSION"
 
 # Build configuration
 print_section "BUILD CONFIGURATION"
@@ -272,8 +242,8 @@ LLVM_IAS=1 \
 INSTALL_MOD_STRIP=1 \
 KCFLAGS=-w \
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y \
-KBUILD_BUILD_USER=\"$(git rev-parse --short HEAD | cut -c1-7)\" \
-KBUILD_BUILD_HOST=\"$(git symbolic-ref --short HEAD)\""
+KBUILD_BUILD_USER=\"samo" \
+KBUILD_BUILD_HOST=\"samo141988 \""
 
 if [ "$QUIET_MODE" = true ]; then
     BUILD_CMD="$BUILD_CMD > \"$BUILD_LOG\" 2>&1"
@@ -292,15 +262,6 @@ fi
 print_section "POST-BUILD OPERATIONS"
 print_status "Copying kernel image..."
 
-if [ -f "out/arch/arm64/boot/Image" ]; then
-    cp out/arch/arm64/boot/Image "$PREFIX/arch/arm64/boot/Image"
-    print_success "Kernel image copied to arch/arm64/boot/Image"
-else
-    print_error "Kernel image not found at expected location"
-    exit 1
-fi
-
-
 
 # Build completion
 BUILD_END_TIME=$(date +%s)
@@ -308,9 +269,8 @@ show_build_info $BUILD_START_TIME $BUILD_END_TIME
 IMAGE="$PREFIX/out/arch/arm64/boot/Image"
 AK3="$PREFIX/AnyKernel3"
 cp $IMAGE $AK3
-		cd $AK3
-		zip -r9 ../$BUILD_END_TIME.zip *
+cd $AK3
+zip -r9 ../$BUILD_END_TIME.zip *
 
 print_section "BUILD COMPLETED"
 print_success "Android kernel build finished successfully!"
-print_status "Kernel image ready at: arch/arm64/boot/Image"
