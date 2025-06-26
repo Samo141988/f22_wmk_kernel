@@ -106,7 +106,7 @@ export ARCH=arm64
 # Display clang version
 CLANG_VERSION=$("$CLANG_DIR/bin/clang" --version | head -n1)
 print_status "Using: $CLANG_VERSION"
-
+CC_CMD="clang"
 # Build configuration
 print_section "BUILD CONFIGURATION"
 export KCFLAGS=-w
