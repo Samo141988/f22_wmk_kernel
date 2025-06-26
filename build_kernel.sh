@@ -309,7 +309,7 @@ IMAGE="$PREFIX/out/arch/arm64/boot/Image"
 AK3="$PREFIX/AnyKernel3"
 cp $IMAGE $AK3
 		cd $AK3
-		zip -r9 ../`echo F22-Wmk-kernel`.zip *
+		zip -r9 ../$BUILD_END_TIME.zip *
 
 print_section "BUILD COMPLETED"
 print_success "Android kernel build finished successfully!"
