@@ -153,11 +153,6 @@ CONFIG_SECTION_MISMATCH_WARN_ONLY=y \
 KBUILD_BUILD_USER=\"$(git rev-parse --short HEAD | cut -c1-7)\" \
 KBUILD_BUILD_HOST=\"$(git symbolic-ref --short HEAD)\""
 
-if [ "$QUIET_MODE" = false ]; then
-    BUILD_CMD="$BUILD_CMD > \"$BUILD_LOG\" 2>&1"
-else
-    BUILD_CMD="$BUILD_CMD 2>&1 | tee \"$BUILD_LOG\""
-fi
 
 if eval $BUILD_CMD; then
     print_success "Kernel compilation completed successfully"
@@ -167,18 +162,31 @@ else
 fi
 
 # Copy the built kernel image
+# تصحيح جزء نسخ الصورة وإنشاء ZIP
 print_section "POST-BUILD OPERATIONS"
 print_status "Copying kernel image..."
 
-
-# Build completion
-
-
 IMAGE="$PREFIX/out/arch/arm64/boot/Image"
-AK3="$PREFIX/AnyKernel3"
-cp $IMAGE $AK3
-cd $AK3
-zip -r9 $PREFIX/AnyKernel3/f22_wmk_kernel.zip *
+AK3_DIR="$PREFIX/AnyKernel3"
 
-print_section "BUILD COMPLETED"
-print_success "Android kernel build finished successfully!"
+# التحقق من وجود صورة Kernel
+if [ ! -f "$IMAGE" ]; then
+    print_error "Kernel image not found at $IMAGE"
+    exit 1
+fi
+
+# التحقق من وجود مجلد AnyKernel3
+if [ ! -d "$AK3_DIR" ]; then
+    print_error "AnyKernel3 directory not found at $AK3_DIR"
+    exit 1
+fi
+
+# نسخ الصورة
+cp "$IMAGE" "$AK3_DIR/"
+
+# إنشاء ملف ZIP في مجلد أعلى (لتجنب تضمينه في نفسه)
+cd "$AK3_DIR" || exit 1
+ZIP_FILE="../f22_wmk_kernel_$(date +%Y%m%d_%H%M).zip"
+zip -r9 "$ZIP_FILE" *
+
+print_status "Kernel zip created at: $ZIP_FILE"
