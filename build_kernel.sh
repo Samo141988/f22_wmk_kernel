@@ -170,83 +170,7 @@ show_build_info() {
     echo -e "  ${CYAN}Log Saved To:${NC} $BUILD_LOG"
 }
 
-# Function to create flashable zip
-create_flashable_zip() {
-    # Change this to an AnyKernel3 ZIP without the Image file in it
-    local source_zip="$PREFIX/WMKernel-f22.zip"
-    local anykernel_dir="$PREFIX/AnyKernel3"
-    local kernel_image="$PREFIX/arch/arm64/boot/Image"
 
-    print_section "FLASHABLE ZIP CREATION"
-
-    # Check if source zip exists
-    if [ ! -f "$source_zip" ]; then
-        print_warning "Source zip not found: $source_zip"
-        print_status "Skipping flashable zip creation"
-        return 1
-    fi
-
-    # Check if kernel image exists
-    if [ ! -f "$kernel_image" ]; then
-        print_error "Kernel image not found: $kernel_image"
-        return 1
-    fi
-
-    # Create AnyKernel3 directory if it doesn't exist
-    if [ ! -d "$anykernel_dir" ]; then
-        print_status "Creating AnyKernel3 directory..."
-        mkdir -p "$anykernel_dir"
-    fi
-
-    # Get git information for filename
-    local current_date=$(date +%Y%m%d_%H%M)
-    local commit_hash=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    local branch_name=$(git symbolic-ref --short HEAD 2>/dev/null | sed 's/[^a-zA-Z0-9._-]/_/g' || echo "unknown")
-
-    # Generate output filename
-    local output_zip="$anykernel_dir/WMKernel-f22_${current_date}_${commit_hash}_${branch_name}.zip"
-
-    print_status "Creating flashable zip..."
-    print_status "Source: $source_zip"
-    print_status "Output: $output_zip"
-
-    # Copy the source zip to the new location
-    if cp "$source_zip" "$output_zip"; then
-        print_success "Base zip copied successfully"
-    else
-        print_error "Failed to copy base zip"
-        return 1
-    fi
-
-    # Check if zip command exists
-    if ! command_exists "zip"; then
-        print_error "zip command not found. Please install zip package"
-        return 1
-    fi
-
-    # Add the kernel image to the zip
-    print_status "Adding kernel image to zip..."
-    if cd "$PREFIX" && zip -j "$output_zip" "$kernel_image" > /dev/null 2>&1; then
-        print_success "Kernel image added to zip successfully"
-        cd "$PREFIX"  # Return to original directory
-    else
-        print_error "Failed to add kernel image to zip"
-        cd "$PREFIX"  # Return to original directory even on failure
-        return 1
-    fi
-
-    # Display final zip information
-    if [ -f "$output_zip" ]; then
-        local zip_size=$(ls -lh "$output_zip" | awk '{print $5}')
-        print_success "Flashable zip created successfully!"
-        echo -e "  ${CYAN}Location:${NC} $output_zip"
-        echo -e "  ${CYAN}Size:${NC} $zip_size"
-        return 0
-    else
-        print_error "Flashable zip creation failed"
-        return 1
-    fi
-}
 
 # Start timing
 BUILD_START_TIME=$(date +%s)
@@ -302,17 +226,7 @@ if [ -x "$CLANG_DIR/bin/clang" ]; then
     print_status "Using: $CLANG_VERSION"
 fi
 
-# Check for ccache and set CC accordingly
-if command_exists "ccache"; then
-    print_success "ccache found - build acceleration enabled"
-    ccache -z > /dev/null 2>&1  # Reset stats
-    CC_CMD="ccache clang"
-    CCACHE_AVAILABLE=true
-else
-    print_warning "ccache not found - builds will be slower"
-    CC_CMD="clang"
-    CCACHE_AVAILABLE=false
-fi
+
 
 # Build configuration
 print_section "BUILD CONFIGURATION"
@@ -386,18 +300,16 @@ else
     exit 1
 fi
 
-# Show ccache statistics
-if [ "$CCACHE_AVAILABLE" = true ]; then
-    print_section "CCACHE STATISTICS"
-    ccache -s
-fi
+
 
 # Build completion
 BUILD_END_TIME=$(date +%s)
 show_build_info $BUILD_START_TIME $BUILD_END_TIME
-
-# Create flashable zip
-create_flashable_zip
+IMAGE="$PREFIX/out/arch/arm64/boot/Image"
+AK3="$PREFIX/AnyKernel3"
+cp $IMAGE $AK3
+		cd $AK3
+		zip -r9 ../`echo F22-Wmk-kernel`.zip *
 
 print_section "BUILD COMPLETED"
 print_success "Android kernel build finished successfully!"
