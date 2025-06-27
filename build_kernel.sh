@@ -1,5 +1,5 @@
 #!/bin/bash
-[ -z $DEFAULT_KSU_REPO ] && DEFAULT_KSU_REPO="https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh"
+[ -z $DEFAULT_KSU_REPO ] && DEFAULT_KSU_REPO="https://raw.githubusercontent.com/Samo141988/KernelSU/main/kernel/setup.sh"
 [ -z $DEFAULT_KSU_BRANCH ] && DEFAULT_KSU_BRANCH="main"
 [ -z $IS_CI ] && IS_CI=true
 # Parse command line arguments
