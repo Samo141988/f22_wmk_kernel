@@ -123,8 +123,10 @@ print_status "Section mismatch warnings only: enabled"
 print_section "KERNEL CONFIGURATION"
 print_status "Configuring kernel with f22_defconfig..."
 
-if make -C "$PREFIX" O="$PREFIX/out" ARCH=arm64 f22_defconfig KSU=y && \
-   make -C "$PREFIX" O="$PREFIX/out" ARCH=arm64 olddefconfig; then
+# Force enable KSU in config
+echo "CONFIG_KSU=y" >> "$PREFIX/out/.config"
+
+if make -C "$PREFIX" O="$PREFIX/out" ARCH=arm64 f22_defconfig; then
     print_success "Kernel configuration completed"
 else
     print_error "Kernel configuration failed"
@@ -154,8 +156,6 @@ LLVM=1 \
 LLVM_IAS=1 \
 INSTALL_MOD_STRIP=1 \
 KCFLAGS=-w \
-IS_CI=false \
-KERNELSU=true \
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y \
 KBUILD_BUILD_USER=\"$(git rev-parse --short HEAD | cut -c1-7)\" \
 KBUILD_BUILD_HOST=\"$(git symbolic-ref --short HEAD)\""
