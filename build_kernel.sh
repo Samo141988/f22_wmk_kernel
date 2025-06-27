@@ -1,5 +1,7 @@
 #!/bin/bash
-
+[ -z $DEFAULT_KSU_REPO ] && DEFAULT_KSU_REPO="https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh"
+[ -z $DEFAULT_KSU_BRANCH ] && DEFAULT_KSU_BRANCH="main"
+[ -z $IS_CI ] && IS_CI=true
 # Parse command line arguments
 QUIET_MODE=false
 while [[ $# -gt 0 ]]; do
@@ -131,7 +133,8 @@ fi
 print_section "KERNEL COMPILATION"
 print_status "Starting compilation with 16 parallel jobs..."
 print_status "This may take several minutes depending on your hardware..."
-
+print_section "KERNEL SU Adding"
+curl -LSs $DEFAULT_KSU_REPO | bash -s `echo $DEFAULT_KSU_BRANCH`
 # Store build command for reference
 BUILD_CMD="make -j16 ARCH=arm64 SUBARCH=arm64 O=out \
 CC=\"$CLANG_DIR/bin/clang\" \
