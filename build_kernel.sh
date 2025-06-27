@@ -1,7 +1,7 @@
 #!/bin/bash
 [ -z $DEFAULT_KSU_REPO ] && DEFAULT_KSU_REPO="https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh"
 [ -z $DEFAULT_KSU_BRANCH ] && DEFAULT_KSU_BRANCH="next"
-[ -z $IS_CI ] && IS_CI=true
+[ -z $IS_CI ] && IS_CI=false
 # Parse command line arguments
 QUIET_MODE=false
 while [[ $# -gt 0 ]]; do
@@ -152,7 +152,7 @@ LLVM=1 \
 LLVM_IAS=1 \
 INSTALL_MOD_STRIP=1 \
 KCFLAGS=-w \
-IS_CI=true \
+IS_CI=false \
 KERNELSU=true \
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y \
 KBUILD_BUILD_USER=\"$(git rev-parse --short HEAD | cut -c1-7)\" \
