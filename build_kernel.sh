@@ -167,7 +167,7 @@ print_section "POST-BUILD OPERATIONS"
 print_status "Copying kernel image..."
 
 IMAGE="$PREFIX/out/arch/arm64/boot/Image"
-AK3_DIR="$PREFIX/AnyKernel3"
+AK3_DIR="$PREFIX/AnyKernel"
 
 # التحقق من وجود صورة Kernel
 if [ ! -f "$IMAGE" ]; then
@@ -177,7 +177,7 @@ fi
 
 # التحقق من وجود مجلد AnyKernel3
 if [ ! -d "$AK3_DIR" ]; then
-    print_error "AnyKernel3 directory not found at $AK3_DIR"
+    print_error "AnyKernel directory not found at $AK3_DIR"
     exit 1
 fi
 
