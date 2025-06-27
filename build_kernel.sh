@@ -124,8 +124,11 @@ print_section "KERNEL CONFIGURATION"
 print_status "Configuring kernel with f22_defconfig..."
 
 # Force enable KSU in config
-make oldconfig KSU=y
-echo "CONFIG_KSU=y" >> "$PREFIX/out/.config"
+
+if [[ "$KERNELSU" == "true" || "$KSU" == "true" ]]; then
+  echo "Applying KernelSU patches..."
+  # Add your KSU patch commands here
+fi
 
 if make -C "$PREFIX" O="$PREFIX/out" ARCH=arm64 f22_defconfig; then
     print_success "Kernel configuration completed"
