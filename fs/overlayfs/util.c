@@ -98,9 +98,6 @@ bool ovl_dentry_remote(struct dentry *dentry)
 
 bool ovl_dentry_weird(struct dentry *dentry)
 {
-	if (!d_can_lookup(dentry) && !d_is_file(dentry) && !d_is_symlink(dentry))
-		return true;
-
 	return dentry->d_flags & (DCACHE_NEED_AUTOMOUNT |
 				  DCACHE_MANAGE_TRANSIT |
 				  DCACHE_OP_HASH |
@@ -144,6 +141,20 @@ void ovl_path_lower(struct dentry *dentry, struct path *path)
 
 	*path = oe->numlower ? oe->lowerstack[0] : (struct path) { };
 }
+
+#ifdef CONFIG_KSU_SUSFS_SUS_OVERLAYFS
+void ovl_path_lowerdata(struct dentry *dentry, struct path *path)
+{
+	struct ovl_entry *oe = dentry->d_fsdata;
+
+	if (oe->numlower) {
+		path->mnt = oe->lowerstack[oe->numlower - 1].mnt;
+		path->dentry = oe->lowerstack[oe->numlower - 1].dentry;
+	} else {
+		*path = (struct path) { };
+	}
+}
+#endif
 
 enum ovl_path_type ovl_path_real(struct dentry *dentry, struct path *path)
 {
