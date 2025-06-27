@@ -119,10 +119,12 @@ print_status "Suppressing warnings: enabled"
 print_status "Section mismatch warnings only: enabled"
 
 # Configure kernel
+# Configure kernel
 print_section "KERNEL CONFIGURATION"
 print_status "Configuring kernel with f22_defconfig..."
 
-if make -C "$PREFIX" O="$PREFIX/out" ARCH=arm64 f22_defconfig; then
+if make -C "$PREFIX" O="$PREFIX/out" ARCH=arm64 f22_defconfig KSU=y && \
+   make -C "$PREFIX" O="$PREFIX/out" ARCH=arm64 olddefconfig; then
     print_success "Kernel configuration completed"
 else
     print_error "Kernel configuration failed"
