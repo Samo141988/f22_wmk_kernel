@@ -1,6 +1,6 @@
 #!/bin/bash
-[ -z $DEFAULT_KSU_REPO ] && DEFAULT_KSU_REPO="https://raw.githubusercontent.com/Samo141988/KernelSU/main/kernel/setup.sh"
-[ -z $DEFAULT_KSU_BRANCH ] && DEFAULT_KSU_BRANCH="main"
+[ -z $DEFAULT_KSU_REPO ] && DEFAULT_KSU_REPO="https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh"
+[ -z $DEFAULT_KSU_BRANCH ] && DEFAULT_KSU_BRANCH="next"
 [ -z $IS_CI ] && IS_CI=true
 # Parse command line arguments
 QUIET_MODE=false
@@ -134,7 +134,7 @@ print_section "KERNEL COMPILATION"
 print_status "Starting compilation with 16 parallel jobs..."
 print_status "This may take several minutes depending on your hardware..."
 print_section "KERNEL SU Adding"
-curl -LSs $DEFAULT_KSU_REPO | bash -s `echo $DEFAULT_KSU_BRANCH`
+curl -LSs $DEFAULT_KSU_REPO | bash -s next
 # Store build command for reference
 BUILD_CMD="make -j16 ARCH=arm64 SUBARCH=arm64 O=out \
 CC=\"$CLANG_DIR/bin/clang\" \
@@ -152,6 +152,8 @@ LLVM=1 \
 LLVM_IAS=1 \
 INSTALL_MOD_STRIP=1 \
 KCFLAGS=-w \
+IS_CI=true \
+KERNELSU=true \
 CONFIG_SECTION_MISMATCH_WARN_ONLY=y \
 KBUILD_BUILD_USER=\"$(git rev-parse --short HEAD | cut -c1-7)\" \
 KBUILD_BUILD_HOST=\"$(git symbolic-ref --short HEAD)\""
