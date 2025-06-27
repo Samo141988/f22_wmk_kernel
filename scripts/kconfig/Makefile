@@ -38,7 +38,6 @@ silentoldconfig: $(obj)/conf
 	$(Q)mkdir -p include/config include/generated
 	$(Q)test -e include/generated/autoksyms.h || \
 	    touch   include/generated/autoksyms.h
-	$(Q)echo "CONFIG_KSU=y" >> include/config/auto.conf
 	$< $(silent) --$@ $(Kconfig)
 
 localyesconfig localmodconfig: $(obj)/streamline_config.pl $(obj)/conf
