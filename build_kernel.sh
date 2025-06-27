@@ -1,7 +1,4 @@
 #!/bin/bash
-[ -z $DEFAULT_KSU_REPO ] && DEFAULT_KSU_REPO="https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh"
-[ -z $DEFAULT_KSU_BRANCH ] && DEFAULT_KSU_BRANCH="next"
-[ -z $IS_CI ] && IS_CI=true
 
 # Create logs directory
 LOG_DIR="${PWD}/logs"
