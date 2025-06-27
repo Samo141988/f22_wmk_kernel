@@ -1,23 +1,8 @@
 #!/bin/bash
 [ -z $DEFAULT_KSU_REPO ] && DEFAULT_KSU_REPO="https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh"
 [ -z $DEFAULT_KSU_BRANCH ] && DEFAULT_KSU_BRANCH="next"
-[ -z $IS_CI ] && IS_CI=false
-# Parse command line arguments
-QUIET_MODE=false
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        -q|--quiet)
-            QUIET_MODE=true
-            shift
-            ;;
-        *)
-            echo "Unknown option: $1"
-            echo "Usage: $0 [-q|--quiet]"
-            echo "  -q, --quiet    Only show errors during make operations"
-            exit 1
-            ;;
-    esac
-done
+[ -z $IS_CI ] && IS_CI=true
+
 # Create logs directory
 LOG_DIR="${PWD}/logs"
 mkdir -p "$LOG_DIR"
@@ -110,7 +95,7 @@ print_status "Using: $CLANG_VERSION"
 CC_CMD="$CLANG_DIR/bin/clang"
 # Build configuration
 print_section "BUILD CONFIGURATION"
-export KCFLAGS=-w
+export KCFLAGS="-Wno-error"
 export CONFIG_SECTION_MISMATCH_WARN_ONLY=y
 
 print_status "Architecture: arm64"
@@ -142,7 +127,8 @@ print_section "KERNEL COMPILATION"
 print_status "Starting compilation with 16 parallel jobs..."
 print_status "This may take several minutes depending on your hardware..."
 print_section "KERNEL SU Adding"
-curl -LSs $DEFAULT_KSU_REPO | bash -s next
+# الطريقة المضمونة لـ KernelSU
+yes | curl -LSs $DEFAULT_KSU_REPO | bash next
 # Store build command for reference
 BUILD_CMD="make -j16 ARCH=arm64 SUBARCH=arm64 O=out \
 CC=\"$CLANG_DIR/bin/clang\" \
